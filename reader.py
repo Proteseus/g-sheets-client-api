@@ -8,8 +8,9 @@ import os
 ##port##
 PORT = int(os.environ.get('PORT', 5500))
 
-
-SPREADSHEET_ID = "1n030AYAJE2zCPIR1l8yvUV40Ne7ixLgIWIR3h0HbFrk"
+#add sheet id to link with google sheets
+SPREADSHEET_ID = ""
+#name of sheet
 RANGE_NAME = "Sheet1"
 
 
