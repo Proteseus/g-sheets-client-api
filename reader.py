@@ -15,6 +15,16 @@ RANGE_NAME = "Sheet1"
 
 
 def get_google_sheet(spreadsheet_id, range_name):
+    """
+    Retrieve data from a Google Sheets spreadsheet and sheet.
+
+    Parameters:
+    - spreadsheet_id (str): The ID of the Google Sheets spreadsheet.
+    - range_name (str): The name of the sheet in the spreadsheet.
+
+    Returns:
+    - dict: A dictionary containing the data from the specified spreadsheet and sheet.
+    """
     scopes = 'https://www.googleapis.com/auth/spreadsheets.readonly'
     # setup the Sheets API
     store = file.Storage('credentials.json')
@@ -28,30 +38,48 @@ def get_google_sheet(spreadsheet_id, range_name):
     return gsheet
 
 def gsheet2df(gsheet):
-    #convert Google sheet data to a Pandas DataFrame
-    header = gsheet.get('values', [])[0]   # header
-    values = gsheet.get('values', [])[1:]  # data
+    """
+    Convert data from a Google Sheets spreadsheet into a Pandas DataFrame.
+
+    Parameters:
+    - gsheet (dict): A dictionary containing the data from a Google Sheets spreadsheet.
+
+    Returns:
+    - Pandas DataFrame: A DataFrame containing the data from the input dictionary.
+    """
+    # extract header row
+    header = gsheet.get('values', [])[0]
+    # extract data
+    values = gsheet.get('values', [])[1:]
     if not values:
         print('No data found.')
     else:
         all_data = []
+        # create a Pandas Series for each column
         for col_id, col_name in enumerate(header):
             column_data = []
             for row in values:
                 column_data.append(row[col_id])
             ds = pd.Series(data=column_data, name=col_name)
             all_data.append(ds)
+        # concatenate the Series objects into a single DataFrame
         df = pd.concat(all_data, axis=1)
         return df
-    
+
 def dictify(df = gsheet2df(gsheet = get_google_sheet(SPREADSHEET_ID, RANGE_NAME))):
+    """
+    Convert a Pandas DataFrame into a list of dictionaries.
+
+    Parameters:
+    - df (Pandas DataFrame, optional): The DataFrame to be converted. Defaults to the DataFrame returned by
+    the google sheets API
+    """
     list_dict = []
 
     for row in list(df.iterrows()):
         list_dict.append(dict(row))
-    
-    return list_dict
 
+    return list_dict
 
 #####testing #####
 # gsheet = get_google_sheet(SPREADSHEET_ID, RANGE_NAME)
